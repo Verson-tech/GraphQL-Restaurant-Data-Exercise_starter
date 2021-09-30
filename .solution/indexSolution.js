@@ -1,9 +1,9 @@
-var { graphqlHTTP } = require("express-graphql");
-var { buildSchema, assertInputType } = require("graphql");
-var express = require("express");
+const { graphqlHTTP } = require("express-graphql");
+const { buildSchema, assertInputType } = require("graphql");
+const express = require("express");
 
 // Construct a schema, using GraphQL schema language
-var restaurants = [
+const restaurants = [
   {
     id: 1,
     name: "WoodsHill ",
@@ -61,7 +61,7 @@ var restaurants = [
     ],
   },
 ];
-var schema = buildSchema(`
+const schema = buildSchema(`
 type Query{
   restaurant(id: Int): restaurant
   restaurants: [restaurant]
@@ -91,7 +91,7 @@ type Mutation{
 `);
 // The root provides a resolver function for each API endpoint
 
-var root = {
+const root = {
   restaurant: (arg) => restaurants[arg.id],
   restaurants: () => restaurants,
   setrestaurant: ({ input }) => {
@@ -116,7 +116,7 @@ var root = {
     return restaurants[id];
   },
 };
-var app = express();
+const app = express();
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -125,7 +125,7 @@ app.use(
     graphiql: true,
   })
 );
-var port = 5500;
+const port = 5500;
 app.listen(5500, () => console.log("Running Graphql on Port:" + port));
 
 export default root;

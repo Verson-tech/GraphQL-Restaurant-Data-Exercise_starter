@@ -1,9 +1,9 @@
-const { graphqlHTTP } = require("express-graphql");
-const { buildSchema, assertInputType } = require("graphql");
-const express = require("express");
+let { graphqlHTTP } = require("express-graphql");
+let { buildSchema, assertInputType } = require("graphql");
+let express = require("express");
 
 // Construct a schema, using GraphQL schema language
-const restaurants = [
+let restaurants = [
   {
     id: 1,
     name: "WoodsHill ",
@@ -61,7 +61,7 @@ const restaurants = [
     ],
   },
 ];
-const schema = buildSchema(`
+let schema = buildSchema(`
 type Query{
   restaurant(id: Int): restaurant
   restaurants: [restaurant]
@@ -91,24 +91,40 @@ type Mutation{
 `);
 // The root provides a resolver function for each API endpoint
 
-const root = {
-  restaurant: (arg) => {
-    // Your code goes here
-  },
-  restaurants: () => {
-    // Your code goes here
-  },
+let root = {
+  // restaurant: ({id}) => {
+  //   for (let restaurant of restaurants) {
+  //     if (restaurant.id === id) {
+  //       return restaurants
+  //     }
+  //   }
+  // },
+
+  restaurant: (arg) => restaurants[arg.id],
+  restaurants: () => restaurants,
   setrestaurant: ({ input }) => {
-    // Your code goes here
+    restaurants.push({ name: input.name, email: input.email, age: input.age });
+    return input;
   },
   deleterestaurant: ({ id }) => {
-    // Your code goes here
+    let ok = Boolean(restaurants[id]);
+    let delc = restaurants[id];
+    restaurants = restaurants.filter((item) => item.id !== id);
+    console.log(JSON.stringify(delc));
+    return { ok };
   },
   editrestaurant: ({ id, ...restaurant }) => {
-    // Your code goes here
+    if (!restaurants[id]) {
+      throw new Error("restaurant doesn't exist");
+    }
+    restaurants[id] = {
+      ...restaurants[id],
+      ...restaurant,
+    };
+    return restaurants[id];
   },
 };
-const app = express();
+let app = express();
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -117,7 +133,7 @@ app.use(
     graphiql: true,
   })
 );
-const port = 5500;
+let port = 5500;
 app.listen(5500, () => console.log("Running Graphql on Port:" + port));
 
 // export default root;
